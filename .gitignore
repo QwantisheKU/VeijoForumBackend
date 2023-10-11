@@ -1,0 +1,12 @@
+/.vs
+/VeijoForumBackend/[Dd]ebug/
+/VeijoForumBackend/[Dd]ebugPublic/
+/VeijoForumBackend/[Rr]elease/
+/VeijoForumBackend/[Rr]eleases/
+/VeijoForumBackend/x64/
+/VeijoForumBackend/x86/
+/VeijoForumBackend/build/
+/VeijoForumBackend/bld/
+/VeijoForumBackend/[Bb]in/
+/VeijoForumBackend/[Oo]bj/
+/VeijoForumBackend/Migrations/
