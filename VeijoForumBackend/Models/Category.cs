@@ -8,6 +8,6 @@
 
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
-        public List<Topic>? Topic { get; set; }
+        public List<Topic>? Topics { get; set; }
     }
 }
