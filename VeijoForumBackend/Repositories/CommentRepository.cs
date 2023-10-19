@@ -25,7 +25,7 @@ namespace VeijoForumBackend.Repositories
             if (comment != null)
             {
                 comment.Text = "Это сообщение было удалено";
-                // TODO: Remove user
+                // TODO: Remove user if necessary
             }
         }
 

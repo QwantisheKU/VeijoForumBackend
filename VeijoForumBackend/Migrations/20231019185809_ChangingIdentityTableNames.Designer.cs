@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VeijoForumBackend.Data;
@@ -11,9 +12,11 @@ using VeijoForumBackend.Data;
 namespace VeijoForumBackend.Migrations
 {
     [DbContext(typeof(VeijoForumBackendContext))]
-    partial class MisisForumContextModelSnapshot : ModelSnapshot
+    [Migration("20231019185809_ChangingIdentityTableNames")]
+    partial class ChangingIdentityTableNames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VeijoForumBackend.Data;
+using VeijoForumBackend.Models;
 using VeijoForumBackend.Repositories;
 using VeijoForumBackend.Repositories.Interfaces;
 using VeijoForumBackend.Services;
@@ -20,18 +22,36 @@ builder.Services.AddTransient<ITopicService, TopicService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<ITagService, TagService>();
 builder.Services.AddTransient<ICommentService, CommentService>();
+builder.Services.AddTransient<IAuthService, AuthService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services
+    .AddIdentity<User, Role>(opt =>
+    {
+        opt.Password = new PasswordOptions
+        {
+            RequireDigit = false,
+            RequiredLength = 6,
+            RequireNonAlphanumeric = false,
+            RequireUppercase = false
+        };
+        opt.User.RequireUniqueEmail = true;
+    })
+    .AddRoles<Role>()
+    .AddRoleManager<RoleManager<Role>>()
+    .AddEntityFrameworkStores<VeijoForumBackendContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services
     .AddControllers()
     .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
