@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VeijoForumBackend.Models.Dto.CommentDtos;
 using VeijoForumBackend.Services.Interfaces;
 
@@ -70,6 +71,7 @@ namespace VeijoForumBackend.Controllers
             return NoContent();
         }*/
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<bool>> CreateComment(CreateCommentDto createCommentDto)
         {
@@ -78,6 +80,7 @@ namespace VeijoForumBackend.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult<bool>> DeleteComment(int id)
         {

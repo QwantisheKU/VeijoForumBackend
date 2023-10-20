@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VeijoForumBackend.Models;
 using VeijoForumBackend.Models.Dto;
 using VeijoForumBackend.Models.Dto.TopicDtos;
@@ -72,6 +73,7 @@ namespace VeijoForumBackend.Controllers
             return NoContent();
         }*/
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Topic>> CreateTopic(CreateTopicDto createTopicDto)
         {
@@ -85,7 +87,7 @@ namespace VeijoForumBackend.Controllers
             return Ok(result);
         }
 
-
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult<bool>> DeleteTopic(int id)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VeijoForumBackend.Models.Dto.TagDtos;
 using VeijoForumBackend.Services.Interfaces;
 
@@ -41,6 +42,7 @@ namespace VeijoForumBackend.Controllers
             return Ok(tag);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<bool>> CreateTag(CreateTagDto createTagDto)
         {
