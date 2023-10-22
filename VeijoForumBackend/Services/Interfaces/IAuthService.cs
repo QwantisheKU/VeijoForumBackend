@@ -8,5 +8,7 @@ namespace VeijoForumBackend.Services.Interfaces
         public Task<bool> RegisterUserAsync(RegisterUserDto registerUserDto);
 
         public Task<Token> LoginUserAsync(LoginUserDto loginUserDto);
+
+        public Task<bool> ConfirmEmailAsync(ConfirmUserDto confirmUserDto);
     }
 }

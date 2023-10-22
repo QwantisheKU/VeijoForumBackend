@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using VeijoForumBackend.Data;
 using VeijoForumBackend.Models;
+using VeijoForumBackend.Models.Mail;
 using VeijoForumBackend.Repositories;
 using VeijoForumBackend.Repositories.Interfaces;
 using VeijoForumBackend.Services;
@@ -27,6 +28,10 @@ builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<ITagService, TagService>();
 builder.Services.AddTransient<ICommentService, CommentService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+
+var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+builder.Services.AddTransient<IMailService, MailService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 

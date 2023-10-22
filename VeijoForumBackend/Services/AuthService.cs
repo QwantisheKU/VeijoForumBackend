@@ -8,6 +8,8 @@ using VeijoForumBackend.Models;
 using VeijoForumBackend.Models.Dto.AuthDtos;
 using VeijoForumBackend.Models.Auth;
 using VeijoForumBackend.Services.Interfaces;
+using Microsoft.AspNetCore.WebUtilities;
+using VeijoForumBackend.Models.Mail;
 
 namespace VeijoForumBackend.Services
 {
@@ -17,13 +19,15 @@ namespace VeijoForumBackend.Services
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
+        private readonly IMailService _mailService;
 
-        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration config, IMapper mapper)
+        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration config, IMapper mapper, IMailService mailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _config = config;
             _mapper = mapper;
+            _mailService = mailService;
         }
 
         public async Task<bool> RegisterUserAsync(RegisterUserDto registerUserDto)
@@ -42,6 +46,16 @@ namespace VeijoForumBackend.Services
 
             if (result.Succeeded)
             {
+                var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                var encodedEmailToken = Encoding.UTF8.GetBytes(confirmEmailToken);
+                var clientToken = WebEncoders.Base64UrlEncode(encodedEmailToken);
+
+                var message = new Message(new List<string> { user.Email }, user.Email, "Email Confirmation");
+                string url = $"https://localhost:7069/v1/auth/confirm?email={user.Email}&token={clientToken}";
+
+                _mailService.SendConfirmEmailAsync(message, url);
+
                 return true;
             }
             return false;
@@ -81,14 +95,9 @@ namespace VeijoForumBackend.Services
             };
 
             var roles = await _userManager.GetRolesAsync(user);
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8
-                .GetBytes(_config.GetSection("AuthSettings:Token").Value));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AuthSettings:Token").Value));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
@@ -115,6 +124,28 @@ namespace VeijoForumBackend.Services
             };
 
             return tokenModel;
+        }
+
+        public async Task<bool> ConfirmEmailAsync(ConfirmUserDto confirmUserDto)
+        {
+            var user = await _userManager.FindByEmailAsync(confirmUserDto.Email);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            var decodedToken = WebEncoders.Base64UrlDecode(confirmUserDto.Token);
+            var serviceToken = Encoding.UTF8.GetString(decodedToken);
+
+            var result = await _userManager.ConfirmEmailAsync(user, serviceToken);
+
+            if (result.Succeeded)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
