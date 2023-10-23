@@ -21,6 +21,13 @@ namespace VeijoForumBackend.Services
             Send(emailMessage);
         }
 
+        public void SendForgetPasswordAsync(Message message, string url)
+        {
+            var emailMessage = CreateForgetPasswordEmailMessage(message, url);
+
+            Send(emailMessage);
+        }
+
         private MimeMessage CreateConfirmEmailMessage(Message message, string url)
         {
             var emailMessage = new MimeMessage();
@@ -32,6 +39,19 @@ namespace VeijoForumBackend.Services
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = html };
             return emailMessage;
         }
+
+        private MimeMessage CreateForgetPasswordEmailMessage(Message message, string url)
+        {
+            var emailMessage = new MimeMessage();
+            emailMessage.From.Add(new MailboxAddress(_emailConfig.From, _emailConfig.From));
+            emailMessage.To.AddRange(message.To);
+            emailMessage.Subject = message.Subject;
+            var html = File.ReadAllText(@"./Models/Mail/ResetPasswordEmail.html");
+            html = html.Replace("{{link}}", url);
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = html };
+            return emailMessage;
+        }
+
         private void Send(MimeMessage mailMessage)
         {
             using (var client = new SmtpClient())

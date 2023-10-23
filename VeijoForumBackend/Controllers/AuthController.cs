@@ -2,6 +2,8 @@
 using VeijoForumBackend.Models.Dto.AuthDtos;
 using VeijoForumBackend.Models.Auth;
 using VeijoForumBackend.Services.Interfaces;
+using System.ComponentModel.DataAnnotations;
+using VeijoForumBackend.Models.Dto;
 
 namespace VeijoForumBackend.Controllers
 {
@@ -10,16 +12,14 @@ namespace VeijoForumBackend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IMailService _mailService;
 
-        public AuthController(IAuthService authService, IMailService mailService)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
-            _mailService = mailService;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<bool>> RegisterUser(RegisterUserDto registerUserDto)
+        public async Task<ActionResult<ResultResponse>> RegisterUser(RegisterUserDto registerUserDto)
         {
             if (!ModelState.IsValid)
             {
@@ -28,49 +28,80 @@ namespace VeijoForumBackend.Controllers
 
             var result = await _authService.RegisterUserAsync(registerUserDto);
 
-            if (result)
+            if (result.IsSuccess)
             {
-                return new ObjectResult(true) { StatusCode = StatusCodes.Status201Created };
+                return new ObjectResult(result) { StatusCode = StatusCodes.Status201Created };
             }
 
             // TODO: Add custom error model and show it instead of just bool
-            return BadRequest(false);
+            return BadRequest(result);
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<Token>> LoginUser(LoginUserDto loginUserDto)
         {
-            if (loginUserDto == null)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
             var result = await _authService.LoginUserAsync(loginUserDto);
 
-            if (result == null)
+            if (result.IsSuccess)
             {
-                return NotFound();
+                return Ok(result);
             }
 
-            return Ok(result);
+            return NotFound(result);
         }
 
         [HttpPost("confirm")]
-        public async Task<ActionResult<bool>> ConfirmEmail([FromQuery] ConfirmUserDto confirmUserDto)
+        public async Task<ActionResult<ResultResponse>> ConfirmEmail([FromQuery] ConfirmUserDto confirmUserDto)
         {
-            if (confirmUserDto == null)
-            {
-                return NotFound();
-            }
-
-            var result = await _authService.ConfirmEmailAsync(confirmUserDto);
-
-            if (!result)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            return Ok(result);
+            var result = await _authService.ConfirmEmailAsync(confirmUserDto);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpPost("forgetPassword")]
+        public async Task<ActionResult<ResultResponse>> ForgetPassword([Required] string email)
+        {
+            var result = await _authService.ForgetPasswordAsync(email);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpPost("resetPassword")]
+        public async Task<ActionResult<ResultResponse>> ResetPassword([FromQuery] ResetPasswordDto resetPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var result = await _authService.ResetPasswordAsync(resetPasswordDto);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
     }
 }

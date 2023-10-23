@@ -1,6 +1,8 @@
-﻿namespace VeijoForumBackend.Models.Auth
+﻿using VeijoForumBackend.Models.Dto;
+
+namespace VeijoForumBackend.Models.Auth
 {
-    public class Token
+    public class Token : ResultResponse
     {
         public string AccessToken { get; set; }
 
