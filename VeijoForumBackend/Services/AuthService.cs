@@ -11,6 +11,7 @@ using VeijoForumBackend.Services.Interfaces;
 using Microsoft.AspNetCore.WebUtilities;
 using VeijoForumBackend.Models.Mail;
 using VeijoForumBackend.Models.Dto;
+using VeijoForumBackend.Models.Dto.ProfileDtos;
 
 namespace VeijoForumBackend.Services
 {
@@ -21,14 +22,16 @@ namespace VeijoForumBackend.Services
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
         private readonly IMailService _mailService;
+        private readonly IProfileService _profileService;
 
-        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration config, IMapper mapper, IMailService mailService)
+        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration config, IMapper mapper, IMailService mailService, IProfileService profileService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _config = config;
             _mapper = mapper;
             _mailService = mailService;
+            _profileService = profileService;
         }
 
         public async Task<ResultResponse> RegisterUserAsync(RegisterUserDto registerUserDto)
@@ -49,6 +52,17 @@ namespace VeijoForumBackend.Services
 
             if (result.Succeeded)
             {
+                // Creating user profile
+                var userProfile = new CreateProfileDto
+                {
+                    NickName = registerUserDto.Username,
+                    UserId = user.Id,
+                };
+
+                _profileService.CreateProfile(userProfile);
+
+
+                // Sending user confirmation email
                 var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
                 var encodedEmailToken = Encoding.UTF8.GetBytes(confirmEmailToken);

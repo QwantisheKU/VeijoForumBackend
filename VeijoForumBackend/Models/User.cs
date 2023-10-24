@@ -7,5 +7,7 @@ namespace VeijoForumBackend.Models
         public List<UserRole> UserRoles { get; set; }
 
         public UserProfile? Profile { get; set; }
+
+        public List<Reaction>? Reactions { get; set; }
     }
 }

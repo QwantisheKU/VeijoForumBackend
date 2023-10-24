@@ -68,5 +68,7 @@ namespace VeijoForumBackend.Data
                 entity.ToTable("UserTokens");
             });
         }
+
+        public DbSet<VeijoForumBackend.Models.UserProfile> UserProfile { get; set; } = default!;
     }
 }

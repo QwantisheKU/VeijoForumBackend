@@ -15,5 +15,9 @@
         public int UserId { get; set; }
 
         public User User { get; set; }
+
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+        public DateTime DateUpdated { get; set; } = DateTime.UtcNow;
     }
 }

@@ -21,6 +21,7 @@ builder.Services.AddTransient<ITopicRepository, TopicRepository>();
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<ITagRepository, TagRepository>();
 builder.Services.AddTransient<ICommentRepository, CommentRepository>();
+builder.Services.AddTransient<IProfileRepository, ProfileRepository>();
 
 // Register Services
 builder.Services.AddTransient<ITopicService, TopicService>();
@@ -28,6 +29,7 @@ builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<ITagService, TagService>();
 builder.Services.AddTransient<ICommentService, CommentService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IProfileService, ProfileService>();
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
 builder.Services.AddSingleton(emailConfig);
